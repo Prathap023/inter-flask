@@ -1,22 +1,32 @@
 pipeline {
     agent any
-    triggers{
-        cron('H/2 ****')
+    
+    triggers {
+        cron('H/2 * * * *')
     }
+    
     stages {
-        stage('clone') {
+        stage('Clone') {
             steps {
-                git 'https://github.com/Prathap023/inter-flask.git'
+                git branch: 'master', url: 'https://github.com/Prathap023/inter-flask.git'
             }
         }
-        stage('DOcker Build') {
+        
+        stage('Docker Build') {
             steps {
                 sh 'docker build -t flaskapp2:v1 .'
             }
         }
-        stage('run') {
+        
+        stage('Docker Run') {
             steps {
-                sh 'docker run -d flaskapp2:v1'
+                sh '''
+                    if [ "$(docker ps -aq -f name=my-flask-app)" ]; then
+                        echo "Stopping and removing existing container..."
+                        docker rm -f my-flask-app
+                    fi
+                    docker run -d --name my-flask-app -p 5000:5000 flaskapp2:v1
+                '''
             }
         }
     }
