@@ -11,9 +11,9 @@ pipeline {
                 sh 'docker build -t flaskapp2:v1 .'
             }
         }
-        stage('Deploy') {
+        stage('run') {
             steps {
-                sh 'docker compose up'
+                sh 'docker run -d flaskapp2:v1'
             }
         }
     }
